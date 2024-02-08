@@ -1,3 +1,4 @@
+import * as A from "fp-ts/Array";
 import { describe, expect, it } from "vitest";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
@@ -51,10 +52,26 @@ const generateRow2 = (
   nbQueens: number,
   currentLine: number
 ): PositionsForQueens[] => {
+  const data = pipe(
+    A.Do,
+    A.bind("x", () => NEA.range(1, 10)),
+    A.bind("y", () => NEA.range(1, 10)),
+    A.map(({ x, y }) => x + y)
+  );
+  console.log("--- ", data.length);
   return pipe(
     currentLine,
     O.fromPredicate(notZero),
-    O.map((step) => generateRow2(nbQueens, step - 1).flatMap(doPlop(nbQueens))),
+    O.map((step) =>
+      pipe(
+        A.Do,
+        A.bind("previous", () => generateRow2(nbQueens, step - 1)),
+        A.bind("increment", () => [doPlop(nbQueens)]),
+        A.map(({ previous, increment }) => increment(previous)),
+        // A.map((item) => item)
+        A.flatten
+      )
+    ),
     O.fold(
       () => [[]],
       (value) => value
