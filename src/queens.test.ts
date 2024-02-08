@@ -66,7 +66,7 @@ const notZero = (value: number) => value != 0;
 
 const doPlop =
   (nbQueens: number) =>
-  (solution: PositionsForQueens): Col[] | readonly Col[][] => {
+  (solution: PositionsForQueens): PositionsForQueens[] => {
     return NEA.range(0, nbQueens - 1)
       .filter((next) => isValidPosition(solution, next))
       .map((next) => solution.concat(next));
